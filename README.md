@@ -58,5 +58,6 @@ node index.js
 
 ## History
 
+* [a7f4db1](https://github.com/winlinvip/rtc-app-nodejs/commit/a7f4db1498bec34da9dd12daee096ceeeef6ed78), Support recover for some OpenAPI error.
 * Support create channel and sign user token.
 
