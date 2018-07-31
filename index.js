@@ -37,10 +37,15 @@ const server = http.createServer((req, res) => {
 		}
 
 		return CreateChannel(config.appId, channelId, config.accessKeyId, config.accessKeySecret, config.endpoint).then((auth) => {
-			channels[channelUrl] = auth;
+			// If recovered from error, we should never cache it,
+			// and we should try to request again next time.
+			if (!auth.recoverd) {
+				channels[channelUrl] = auth;
+			}
+
 			console.log('Create requestId=' + auth.requestId + ', channelId=' + channelId
 				+ ', nonce=' + auth.nonce + ', timestamp=' + auth.timestamp + ', channelKey='
-				+ auth.channelKey);
+				+ auth.channelKey + ', recovered=' + auth.recoverd);
 			return auth;
 		});
 	}).then((auth) => {
@@ -109,6 +114,7 @@ function CreateChannel(appId, channelId,
 			AppId: appId, ChannelId: channelId
 		}).then((res) => {
 			resolve({
+				recoverd: false,
 				appId: appId,
 				channelId: channelId,
 				requestId: res.RequestId,
@@ -117,7 +123,36 @@ function CreateChannel(appId, channelId,
 				channelKey: res.ChannelKey
 			});
 		}).catch((err) => {
-			reject(err);
+			// Fatal errors, we couldn't recover.
+			var fatal = false;
+			if (!err || !err.code) {
+				fatal = true;
+			} else if (err.code == 'IllegalOperationApp') {
+				fatal = true;
+			} else if (err.code.indexOf('InvalidAccessKeyId') != -1) {
+				fatal = true;
+			} else if (err.code == 'SignatureDoesNotMatch') {
+				fatal = true;
+			}
+			if (fatal) {
+				reject(err);
+				return;
+			}
+
+			// Try to recover from OpenAPI error.
+			var recoverId = 'RCV-' + uuidv4();
+			var recoverResponse = {
+				recoverd: true,
+				appId: appId,
+                channelId: channelId,
+                requestId: recoverId,
+                nonce: recoverId,
+                timestamp: 0,
+                channelKey: recoverId
+            };
+			console.warn('Recover ' + JSON.stringify(recoverResponse)
+				+ ' from OpenAPI error, err is ' + JSON.stringify(err));
+			resolve(recoverResponse);
 		});
 	});
 }
