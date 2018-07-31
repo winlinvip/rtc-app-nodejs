@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
 	console.log('Request channelId=' + channelId + ', user=' + user + ', appid=' + config.appId);
 
 	Promise.resolve().then(()=>{
-		var auth = channels[channelId];
+		var auth = channels[channelUrl];
 		if (auth) {
 			return auth;
 		}
@@ -53,7 +53,9 @@ const server = http.createServer((req, res) => {
 		var username = userId + '?appid=' + auth.appId + '&session=' + session
 			+ '&channel=' + auth.channelId + '&nonce=' + auth.nonce
 			+ '&timestamp=' + auth.timestamp;
-		console.log('Sign user=' + userId + ', session=' + session + ', token=' + token);
+
+		console.log('Sign user=' + userId + ', session=' + session + ', token=' + token
+			+ ', channelKey=' + auth.channelKey);
 
 		res.setHeader("Content-Type", "application/json");
 		res.end(JSON.stringify({
@@ -115,6 +117,7 @@ function CreateChannel(appId, channelId,
 				channelKey: res.ChannelKey
 			});
 		}).catch((error) => {
+			console.error(error);
 			reject(error);
 		});
 	});
