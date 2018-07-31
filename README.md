@@ -2,7 +2,7 @@
 
 Nodejs AppServer for RTC.
 
-AppServer writen by other languages:
+You could also write AppServer by following languages:
 
 * Python: https://github.com/winlinvip/rtc-app-python
 * Java: https://github.com/winlinvip/rtc-app-java

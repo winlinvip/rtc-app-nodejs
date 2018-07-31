@@ -82,15 +82,20 @@ const server = http.createServer((req, res) => {
 server.listen(config.listen);
 
 const sha256 = require('sha256/lib/sha256');
-function CreateToken(channelId, channelKey, appId, userId, session, nonce, timestamp) {
+function CreateToken(channelId, channelKey,
+	appId, userId, session, nonce, timestamp
+) {
 	return new Promise((resolve, reject) => {
-		var token = sha256(channelId + channelKey + appId + userId + session + nonce + timestamp);
+		var token = sha256(channelId + channelKey
+			+ appId + userId + session + nonce + timestamp);
 		resolve(token);
 	});
 }
 
 var RTCClient = require('@alicloud/rtc-2018-01-11/lib/client');
-function CreateChannel(appId, channelId, accessKeyId, accessKeySecret, endpoint) {
+function CreateChannel(appId, channelId,
+	accessKeyId, accessKeySecret, endpoint
+) {
 	return new Promise((resolve, reject) => {
 		var rtc = new RTCClient({
 			accessKeyId: accessKeyId,
