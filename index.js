@@ -117,7 +117,6 @@ function CreateChannel(appId, channelId,
 				channelKey: res.ChannelKey
 			});
 		}).catch((error) => {
-			console.error(error);
 			reject(error);
 		});
 	});
