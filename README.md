@@ -56,3 +56,7 @@ node index.js
 
 > Remark: Please use your AppServer IP instead by `ifconfig eth0`.
 
+## History
+
+* Support create channel and sign user token.
+
