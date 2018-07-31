@@ -74,10 +74,10 @@ const server = http.createServer((req, res) => {
 				}
 			}
 		}));
-	}).catch((error) => {
-		console.error(error);
+	}).catch((err) => {
+		console.error(err);
 		res.writeHead(500);
-		res.end(error.message);
+		res.end(JSON.stringify(err));
 	});
 });
 
@@ -116,8 +116,8 @@ function CreateChannel(appId, channelId,
 				timestamp: res.Timestamp,
 				channelKey: res.ChannelKey
 			});
-		}).catch((error) => {
-			reject(error);
+		}).catch((err) => {
+			reject(err);
 		});
 	});
 }
