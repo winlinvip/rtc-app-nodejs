@@ -99,6 +99,41 @@ function CreateToken(channelId, channelKey,
 	});
 }
 
+function RecoverForError(err,
+	resolve, reject, appId, channelId
+) {
+	// Fatal errors, we couldn't recover.
+	var fatal = false;
+	if (!err || !err.code) {
+		fatal = true;
+	} else if (err.code == 'IllegalOperationApp') {
+		fatal = true;
+	} else if (err.code.indexOf('InvalidAccessKeyId') != -1) {
+		fatal = true;
+	} else if (err.code == 'SignatureDoesNotMatch') {
+		fatal = true;
+	}
+	if (fatal) {
+		reject(err);
+		return;
+	}
+
+	// Try to recover from OpenAPI error.
+	var recoverId = 'RCV-' + uuidv4();
+	var recoverResponse = {
+		recoverd: true,
+		appId: appId,
+        channelId: channelId,
+        requestId: recoverId,
+        nonce: recoverId,
+        timestamp: 0,
+        channelKey: recoverId
+    };
+	console.warn('Recover ' + JSON.stringify(recoverResponse)
+		+ ' from OpenAPI error, err is ' + JSON.stringify(err));
+	resolve(recoverResponse);
+}
+
 var RTCClient = require('@alicloud/rtc-2018-01-11/lib/client');
 function CreateChannel(appId, channelId,
 	accessKeyId, accessKeySecret, endpoint
@@ -123,36 +158,8 @@ function CreateChannel(appId, channelId,
 				channelKey: res.ChannelKey
 			});
 		}).catch((err) => {
-			// Fatal errors, we couldn't recover.
-			var fatal = false;
-			if (!err || !err.code) {
-				fatal = true;
-			} else if (err.code == 'IllegalOperationApp') {
-				fatal = true;
-			} else if (err.code.indexOf('InvalidAccessKeyId') != -1) {
-				fatal = true;
-			} else if (err.code == 'SignatureDoesNotMatch') {
-				fatal = true;
-			}
-			if (fatal) {
-				reject(err);
-				return;
-			}
-
-			// Try to recover from OpenAPI error.
-			var recoverId = 'RCV-' + uuidv4();
-			var recoverResponse = {
-				recoverd: true,
-				appId: appId,
-                channelId: channelId,
-                requestId: recoverId,
-                nonce: recoverId,
-                timestamp: 0,
-                channelKey: recoverId
-            };
-			console.warn('Recover ' + JSON.stringify(recoverResponse)
-				+ ' from OpenAPI error, err is ' + JSON.stringify(err));
-			resolve(recoverResponse);
+			RecoverForError(err,
+				resolve, reject, appId, channelId);
 		});
 	});
 }
