@@ -16,6 +16,9 @@ For RTC deverloper:
 * RTC [workflow](https://help.aliyun.com/document_detail/74889.html).
 * RTC [token generation](https://help.aliyun.com/document_detail/74890.html).
 
+> We depends on [@alicloud/rtc-2018-01-11](https://github.com/aliyun/aliyun-openapi-nodejs-sdk),
+you can also update to the latest version.
+
 ## Usage
 
 1. Generate AK from [here](https://usercenter.console.aliyun.com/#/manage/ak):
