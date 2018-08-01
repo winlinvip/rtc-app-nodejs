@@ -30,6 +30,7 @@ const server = http.createServer((req, res) => {
 	var channelUrl = config.appId + '/' + channelId;
 	console.log('Request channelId=' + channelId + ', user=' + user + ', appid=' + config.appId);
 
+	var starttime = new Date();
 	Promise.resolve().then(()=>{
 		var auth = channels[channelUrl];
 		if (auth) {
@@ -43,7 +44,8 @@ const server = http.createServer((req, res) => {
 				channels[channelUrl] = auth;
 			}
 
-			console.log('Create requestId=' + auth.requestId + ', channelId=' + channelId
+			var duration = parseInt(new Date().getTime() - starttime.getTime());
+			console.log('Create requestId=' + auth.requestId + ', cost=' + duration + 'ms, channelId=' + channelId
 				+ ', nonce=' + auth.nonce + ', timestamp=' + auth.timestamp + ', channelKey='
 				+ auth.channelKey + ', recovered=' + auth.recoverd);
 			return auth;
@@ -59,7 +61,8 @@ const server = http.createServer((req, res) => {
 			+ '&channel=' + auth.channelId + '&nonce=' + auth.nonce
 			+ '&timestamp=' + auth.timestamp;
 
-		console.log('Sign user=' + userId + ', session=' + session + ', token=' + token
+		var duration = parseInt(new Date().getTime() - starttime.getTime());
+		console.log('Sign cost=' + duration + 'ms, user=' + userId + ', session=' + session + ', token=' + token
 			+ ', channelKey=' + auth.channelKey);
 
 		res.setHeader("Content-Type", "application/json");
