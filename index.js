@@ -51,11 +51,11 @@ const server = http.createServer((req, res) => {
 			return auth;
 		});
 	}).then((auth) => {
-		var userId = uuidv4();
-		var session = uuidv4();
-		return CreateToken(channelId, auth.channelKey, config.appId, userId, session, auth.nonce, auth.timestamp).then((token) => {
-			return [auth, userId, session, token];
-		});
+		var userId = CreateUserID();
+		var session = CreateSession(config.appId, channelId, auth.channelKey, userId);
+		var token = CreateToken(channelId, auth.channelKey, config.appId, userId, session,
+			auth.nonce, auth.timestamp);
+		return [auth, userId, session, token];
 	}).then(([auth, userId, session, token]) => {
 		var username = userId + '?appid=' + auth.appId + '&session=' + session
 			+ '&channel=' + auth.channelId + '&nonce=' + auth.nonce
@@ -92,14 +92,23 @@ const server = http.createServer((req, res) => {
 server.listen(config.listen);
 
 const sha256 = require('sha256/lib/sha256');
+
+function CreateUserID() {
+	return uuidv4();
+}
+
+function CreateSession(appId, channelId, channelKey, userId) {
+	var now = new Date().getTime();
+	var session = sha256(appId + channelId + channelKey + userId + now);
+	return session;
+}
+
 function CreateToken(channelId, channelKey,
 	appId, userId, session, nonce, timestamp
 ) {
-	return new Promise((resolve, reject) => {
-		var token = sha256(channelId + channelKey
-			+ appId + userId + session + nonce + timestamp);
-		resolve(token);
-	});
+	var token = sha256(channelId + channelKey
+		+ appId + userId + session + nonce + timestamp);
+	return token;
 }
 
 function RecoverForError(err,

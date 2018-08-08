@@ -76,6 +76,7 @@ node index.js
 
 ## History
 
+* Update SessionID generation algorithm.
 * [1a11844](https://github.com/winlinvip/rtc-app-nodejs/commit/1a11844b86c568c9bf63c5f7c0c96c873dbb7b2f), Log the request id and cost in ms.
 * [a7f4db1](https://github.com/winlinvip/rtc-app-nodejs/commit/a7f4db1498bec34da9dd12daee096ceeeef6ed78), Support recover for some OpenAPI error.
 * Support create channel and sign user token.
