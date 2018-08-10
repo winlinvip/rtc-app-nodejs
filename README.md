@@ -68,7 +68,13 @@ echo "};" >> config.js &&
 node index.js
 ```
 
-4. Verify AppServer by [here](http://localhost:8080/app/v1/login?room=5678&user=nvivy&passwd=12345678).
+4. Verify AppServer by [here](http://ossrs.net/talks/ng_index.html#/rtc-check?schema=http&host=127.0.0.1&port=8080&path=/app/v1/login&room=1237&user=jzufp&password=12345678).
+
+![AppServer Success](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-ok.png)
+
+![AppServer Error Recovered](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-recovered.png)
+
+![AppServer Failed](https://github.com/winlinvip/rtc-app-golang/raw/master/images/app-failed.png)
 
 > Remark: You can setup client native SDK by `http://30.2.228.19:8080/app/v1`.
 
