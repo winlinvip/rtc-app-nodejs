@@ -52,17 +52,16 @@ const server = http.createServer((req, res) => {
 		});
 	}).then((auth) => {
 		var userId = CreateUserID();
-		var session = CreateSession(config.appId, channelId, auth.channelKey, userId);
-		var token = CreateToken(channelId, auth.channelKey, config.appId, userId, session,
+		var token = CreateToken(channelId, auth.channelKey, config.appId, userId,
 			auth.nonce, auth.timestamp);
-		return [auth, userId, session, token];
-	}).then(([auth, userId, session, token]) => {
-		var username = userId + '?appid=' + auth.appId + '&session=' + session
+		return [auth, userId, token];
+	}).then(([auth, userId, token]) => {
+		var username = userId + '?appid=' + auth.appId
 			+ '&channel=' + auth.channelId + '&nonce=' + auth.nonce
 			+ '&timestamp=' + auth.timestamp;
 
 		var duration = parseInt(new Date().getTime() - starttime.getTime());
-		console.log('Sign cost=' + duration + 'ms, user=' + userId + ', session=' + session + ', token=' + token
+		console.log('Sign cost=' + duration + 'ms, user=' + userId + ', token=' + token
 			+ ', channelKey=' + auth.channelKey);
 
 		res.setHeader("Content-Type", "application/json");
@@ -72,7 +71,6 @@ const server = http.createServer((req, res) => {
 				appid: auth.appId,
 				userid: userId,
 				gslb: [config.gslb],
-				session: session,
 				token: token,
 				nonce: auth.nonce,
 				timestamp: auth.timestamp,
@@ -97,17 +95,11 @@ function CreateUserID() {
 	return uuidv4();
 }
 
-function CreateSession(appId, channelId, channelKey, userId) {
-	var now = new Date().getTime();
-	var session = sha256(appId + channelId + channelKey + userId + now);
-	return session;
-}
-
 function CreateToken(channelId, channelKey,
-	appId, userId, session, nonce, timestamp
+	appId, userId, nonce, timestamp
 ) {
 	var token = sha256(channelId + channelKey
-		+ appId + userId + session + nonce + timestamp);
+		+ appId + userId + nonce + timestamp);
 	return token;
 }
 
